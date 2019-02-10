@@ -60,6 +60,11 @@
             this.nudWeights8 = new System.Windows.Forms.NumericUpDown();
             this.nudWeights6 = new System.Windows.Forms.NumericUpDown();
             this.nudWeights7 = new System.Windows.Forms.NumericUpDown();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label4 = new System.Windows.Forms.Label();
+            this.numericUpDownPWM = new System.Windows.Forms.NumericUpDown();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBoxPID1 = new System.Windows.Forms.CheckBox();
             this.menuStripUp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKd)).BeginInit();
@@ -82,6 +87,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights7)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPWM)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStripUp
@@ -91,7 +99,7 @@
             this.toolStripMenuItemFile});
             this.menuStripUp.Location = new System.Drawing.Point(0, 0);
             this.menuStripUp.Name = "menuStripUp";
-            this.menuStripUp.Size = new System.Drawing.Size(800, 24);
+            this.menuStripUp.Size = new System.Drawing.Size(977, 24);
             this.menuStripUp.TabIndex = 0;
             this.menuStripUp.Text = "menuStrip1";
             // 
@@ -129,7 +137,7 @@
             // 
             // buttonPlot
             // 
-            this.buttonPlot.Location = new System.Drawing.Point(12, 209);
+            this.buttonPlot.Location = new System.Drawing.Point(22, 292);
             this.buttonPlot.Name = "buttonPlot";
             this.buttonPlot.Size = new System.Drawing.Size(75, 23);
             this.buttonPlot.TabIndex = 12;
@@ -145,6 +153,7 @@
             this.buttonSetDefaults.TabIndex = 5;
             this.buttonSetDefaults.Text = "Domyślne";
             this.buttonSetDefaults.UseVisualStyleBackColor = true;
+            this.buttonSetDefaults.Click += new System.EventHandler(this.buttonSetDefaults_Click);
             // 
             // numericUpDownKi
             // 
@@ -191,18 +200,18 @@
             // checkBoxPlotData
             // 
             this.checkBoxPlotData.AutoSize = true;
-            this.checkBoxPlotData.Location = new System.Drawing.Point(12, 186);
+            this.checkBoxPlotData.Location = new System.Drawing.Point(10, 19);
             this.checkBoxPlotData.Name = "checkBoxPlotData";
-            this.checkBoxPlotData.Size = new System.Drawing.Size(100, 17);
+            this.checkBoxPlotData.Size = new System.Drawing.Size(52, 17);
             this.checkBoxPlotData.TabIndex = 5;
-            this.checkBoxPlotData.Text = "Wykres danych";
+            this.checkBoxPlotData.Text = "Dane";
             this.checkBoxPlotData.UseVisualStyleBackColor = true;
             // 
             // cartesianChart1
             // 
             this.cartesianChart1.Location = new System.Drawing.Point(114, 40);
             this.cartesianChart1.Name = "cartesianChart1";
-            this.cartesianChart1.Size = new System.Drawing.Size(674, 398);
+            this.cartesianChart1.Size = new System.Drawing.Size(786, 451);
             this.cartesianChart1.TabIndex = 6;
             this.cartesianChart1.Text = "cartesianChart1";
             // 
@@ -210,6 +219,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 40);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -434,15 +444,73 @@
             this.nudWeights7.Size = new System.Drawing.Size(62, 20);
             this.nudWeights7.TabIndex = 7;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.label4);
+            this.tabPage3.Controls.Add(this.numericUpDownPWM);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(87, 114);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Inne";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(0, 3);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(85, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Domyślny PWM ";
+            // 
+            // numericUpDownPWM
+            // 
+            this.numericUpDownPWM.Location = new System.Drawing.Point(3, 19);
+            this.numericUpDownPWM.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDownPWM.Name = "numericUpDownPWM";
+            this.numericUpDownPWM.Size = new System.Drawing.Size(75, 20);
+            this.numericUpDownPWM.TabIndex = 0;
+            this.numericUpDownPWM.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.checkBoxPID1);
+            this.groupBox1.Controls.Add(this.checkBoxPlotData);
+            this.groupBox1.Location = new System.Drawing.Point(12, 186);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(95, 100);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Wykresy";
+            // 
+            // checkBoxPID1
+            // 
+            this.checkBoxPID1.AutoSize = true;
+            this.checkBoxPID1.Location = new System.Drawing.Point(10, 42);
+            this.checkBoxPID1.Name = "checkBoxPID1";
+            this.checkBoxPID1.Size = new System.Drawing.Size(50, 17);
+            this.checkBoxPID1.TabIndex = 6;
+            this.checkBoxPID1.Text = "PID1";
+            this.checkBoxPID1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(977, 503);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonPlot);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cartesianChart1);
-            this.Controls.Add(this.checkBoxPlotData);
             this.Controls.Add(this.menuStripUp);
             this.MainMenuStrip = this.menuStripUp;
             this.Name = "Form1";
@@ -471,6 +539,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudWeights7)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPWM)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -510,6 +583,11 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.NumericUpDown nudWeights13;
         private System.Windows.Forms.NumericUpDown nudWeights12;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox checkBoxPID1;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown numericUpDownPWM;
     }
 }
 

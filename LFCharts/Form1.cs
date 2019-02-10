@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using LiveCharts;
 using LiveCharts.Wpf;
@@ -23,13 +16,26 @@ namespace LFCharts
         public Form1()
         {
             InitializeComponent();
-            cartesianChart1.Zoom = ZoomingOptions.X;
-            cartesianChart1.Hoverable = false;
             cartesianChart1.DataTooltip = null;
+            cartesianChart1.ScrollMode = ScrollMode.X;
+            cartesianChart1.Zoom = ZoomingOptions.X;
+            cartesianChart1.DisableAnimations = true;
+            cartesianChart1.Hoverable = false;
             cartesianChart1.LegendLocation = LegendLocation.Left;
             SetNumericUpDownIncrement(numericUpDownKp, 0.1m);
             SetNumericUpDownIncrement(numericUpDownKd, 0.1m);
             SetNumericUpDownIncrement(numericUpDownKi, 0.1m);
+            cartesianChart1.AxisY.Add(new Axis
+            {
+                Foreground = System.Windows.Media.Brushes.DodgerBlue,
+                Title = "PWM"
+            });
+            cartesianChart1.AxisY.Add(new Axis
+            {
+                Foreground = System.Windows.Media.Brushes.IndianRed,
+                Title = "Dane",
+                Position = AxisPosition.RightTop
+            });
         }
 
         private void SetNumericUpDownIncrement(NumericUpDown numeric, decimal value)
@@ -76,6 +82,7 @@ namespace LFCharts
                 SetNumericUpDownValue(panel1.Controls[i] as NumericUpDown, Convert.ToDecimal(data.Weights[n]));
             }
             Average = new float[data.Size / 2];
+            int last = 0;
             for (int i = 0; i < data.Size / 2; i++)
             {
                 Average[i] = 0;
@@ -86,8 +93,19 @@ namespace LFCharts
                         a++;
                     Average[i] += ((data.Values[i] & (1 << j)) >> j) * data.Weights[j];
                 }
-                if (a != 0)
+                if (a == 0)
+                {
+                    if (last > 0)
+                        Average[i] = data.Weights[13];
+                    else
+                        if (last < 0)
+                        Average[i] = data.Weights[0];
+                }
+                else
+                {
                     Average[i] /= a;
+                    last = Convert.ToInt32(Average[i]);
+                }
             }
             SetNumericUpDownValue(numericUpDownKp, Convert.ToDecimal(data.Kp));
             SetNumericUpDownValue(numericUpDownKd, Convert.ToDecimal(data.Kd));
@@ -100,20 +118,82 @@ namespace LFCharts
         }
 
         private void buttonPlot_Click(object sender, EventArgs e)
-        { 
+        {
+            foreach (var series in cartesianChart1.Series)
+                cartesianChart1.Series.Remove(series);
+            Cursor = Cursors.WaitCursor;
             if (checkBoxPlotData.Checked)
             {
-                Cursor = Cursors.WaitCursor;
                 cartesianChart1.Series.Add(new LineSeries
                 {
                     Values = new ChartValues<float>(Average),
                     Title = "Dane",
                     Fill = System.Windows.Media.Brushes.Transparent,
                     PointGeometry = null,
-                    LineSmoothness = 0
+                    LineSmoothness = 0,
+                    ScalesYAt = 1,
+                    PointForeground = System.Windows.Media.Brushes.Black
                 });
-                Cursor = Cursors.Arrow;
             }
+            if (checkBoxPID1.Checked)
+            {
+                int[] Left = new int[data.Size / 2];
+                int[] Right = new int[data.Size / 2];
+                int errPre = 0;
+                for (int i = 0; i < data.Size / 2; i++)
+                {
+                    if (data.Values[i] == 0)
+                    {
+                        if (errPre < 0)
+                        {
+                            errPre = Convert.ToInt32(nudWeights0.Value);
+                        }
+                        else
+                        if (errPre > 0)
+                        {
+                            errPre = Convert.ToInt32(nudWeights11.Value);
+                        }
+                    }
+                    int err = Convert.ToInt32(Average[i] * -1);
+                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre));
+                    if (data.Values[i] != 0)
+                        errPre = err;
+                    int tempPwm;
+                    tempPwm = Convert.ToInt32(numericUpDownPWM.Value + Change);
+                    if (tempPwm > 255)
+                        tempPwm = 255;
+                    else
+                        if (tempPwm < 0)
+                        tempPwm = 0;
+                    Left[i] = tempPwm;
+                    tempPwm = Convert.ToInt32(numericUpDownPWM.Value - Change);
+                    if (tempPwm > 255)
+                        tempPwm = 255;
+                    else
+                        if (tempPwm < 0)
+                        tempPwm = 0;
+                    Right[i] = tempPwm;
+                }
+                cartesianChart1.Series.Add(new LineSeries
+                {
+                    Values = new ChartValues<int>(Left),
+                    Title = "Lewy PWM",
+                    Fill = System.Windows.Media.Brushes.Transparent,
+                    PointGeometry = null,
+                    LineSmoothness = 0,
+                    PointForeground = System.Windows.Media.Brushes.Red
+                });
+                cartesianChart1.Series.Add(new LineSeries
+                {
+                    Values = new ChartValues<int>(Right),
+                    Title = "Prawy PWM",
+                    Fill = System.Windows.Media.Brushes.Transparent,
+                    PointGeometry = null,
+                    LineSmoothness = 0,
+                    PointForeground = System.Windows.Media.Brushes.Blue
+                });
+            }
+            Cursor = Cursors.Arrow;
         }
 
         private void SetNumericUpDownValue(NumericUpDown numeric, decimal value)
@@ -123,6 +203,13 @@ namespace LFCharts
                 this.Invoke(methodInvokerDelegate);
             else
                 methodInvokerDelegate();
+        }
+
+        private void buttonSetDefaults_Click(object sender, EventArgs e)
+        {
+            SetNumericUpDownValue(numericUpDownKp, Convert.ToDecimal(data.Kp));
+            SetNumericUpDownValue(numericUpDownKd, Convert.ToDecimal(data.Kd));
+            SetNumericUpDownValue(numericUpDownKi, Convert.ToDecimal(data.Ki));
         }
     }
 
@@ -161,14 +248,6 @@ namespace LFCharts
             for (int i = 0; i < 8; i++)
             {
                 reader.ReadUInt16();
-                /*
-                ushort a = reader.ReadUInt16();
-                if (a != (ushort)0xffff)
-                {
-                    Ok = false;
-                    return;
-                }
-                */
             }
             Values = new int[Size / 2];
             for (int i = 0; i < Size / 2; i++)
