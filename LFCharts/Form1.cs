@@ -68,6 +68,7 @@ namespace LFCharts
                     {
                         MessageBox.Show("Nie można odczytać pliku!");
                     }
+                    fileStream.Dispose();
                     Cursor = Cursors.Arrow;
                 }
             }
@@ -135,7 +136,39 @@ namespace LFCharts
                     PointForeground = System.Windows.Media.Brushes.Black
                 });
             }
-            if (checkBoxPID1.Checked)
+            if (checkBoxPIDValue.Checked)
+            {
+                int[] Val = new int[data.Size / 2];
+                int errPre = 0;
+                for (int i = 0; i < data.Size / 2; i++)
+                {
+                    if (data.Values[i] == 0)
+                    {
+                        if (errPre < 0)
+                        {
+                            errPre = Convert.ToInt32(nudWeights0.Value);
+                        }
+                        else
+                        if (errPre > 0)
+                        {
+                            errPre = Convert.ToInt32(nudWeights11.Value);
+                        }
+                    }
+                    int err = Convert.ToInt32(Average[i] * -1);
+                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre));
+                    Val[i] = Change;
+                }
+                cartesianChart1.Series.Add(new LineSeries
+                {
+                    Values = new ChartValues<int>(Val),
+                    Title = "Wart. zmiany",
+                    Fill = System.Windows.Media.Brushes.Transparent,
+                    PointGeometry = null,
+                    LineSmoothness = 0,
+                    PointForeground = System.Windows.Media.Brushes.Yellow
+                });
+            }
+            if (checkBoxPIDPwm.Checked)
             {
                 int[] Left = new int[data.Size / 2];
                 int[] Right = new int[data.Size / 2];
@@ -155,7 +188,7 @@ namespace LFCharts
                         }
                     }
                     int err = Convert.ToInt32(Average[i] * -1);
-                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre));
+                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre) + numericUpDownKi.Value * (err - errPre));
                     if (data.Values[i] != 0)
                         errPre = err;
                     int tempPwm;

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStripUp = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +65,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.numericUpDownPWM = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBoxPID1 = new System.Windows.Forms.CheckBox();
+            this.checkBoxPIDValue = new System.Windows.Forms.CheckBox();
+            this.checkBoxPIDPwm = new System.Windows.Forms.CheckBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStripUp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKd)).BeginInit();
@@ -90,6 +94,7 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPWM)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStripUp
@@ -142,6 +147,7 @@
             this.buttonPlot.Size = new System.Drawing.Size(75, 23);
             this.buttonPlot.TabIndex = 12;
             this.buttonPlot.Text = "Rysuj";
+            this.toolTip1.SetToolTip(this.buttonPlot, "Tak. To rysuje wykres. Po co to sprawdzasz?");
             this.buttonPlot.UseVisualStyleBackColor = true;
             this.buttonPlot.Click += new System.EventHandler(this.buttonPlot_Click);
             // 
@@ -152,6 +158,7 @@
             this.buttonSetDefaults.Size = new System.Drawing.Size(75, 23);
             this.buttonSetDefaults.TabIndex = 5;
             this.buttonSetDefaults.Text = "Domyślne";
+            this.toolTip1.SetToolTip(this.buttonSetDefaults, "Ustaw nastawy regulatora na domyślne");
             this.buttonSetDefaults.UseVisualStyleBackColor = true;
             this.buttonSetDefaults.Click += new System.EventHandler(this.buttonSetDefaults_Click);
             // 
@@ -205,6 +212,7 @@
             this.checkBoxPlotData.Size = new System.Drawing.Size(52, 17);
             this.checkBoxPlotData.TabIndex = 5;
             this.checkBoxPlotData.Text = "Dane";
+            this.toolTip1.SetToolTip(this.checkBoxPlotData, "Dane z czujników wczytane z pliku");
             this.checkBoxPlotData.UseVisualStyleBackColor = true;
             // 
             // cartesianChart1
@@ -483,7 +491,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBoxPID1);
+            this.groupBox1.Controls.Add(this.checkBoxPIDValue);
+            this.groupBox1.Controls.Add(this.checkBoxPIDPwm);
             this.groupBox1.Controls.Add(this.checkBoxPlotData);
             this.groupBox1.Location = new System.Drawing.Point(12, 186);
             this.groupBox1.Name = "groupBox1";
@@ -492,21 +501,46 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Wykresy";
             // 
-            // checkBoxPID1
+            // checkBoxPIDValue
             // 
-            this.checkBoxPID1.AutoSize = true;
-            this.checkBoxPID1.Location = new System.Drawing.Point(10, 42);
-            this.checkBoxPID1.Name = "checkBoxPID1";
-            this.checkBoxPID1.Size = new System.Drawing.Size(50, 17);
-            this.checkBoxPID1.TabIndex = 6;
-            this.checkBoxPID1.Text = "PID1";
-            this.checkBoxPID1.UseVisualStyleBackColor = true;
+            this.checkBoxPIDValue.AutoSize = true;
+            this.checkBoxPIDValue.Location = new System.Drawing.Point(10, 42);
+            this.checkBoxPIDValue.Name = "checkBoxPIDValue";
+            this.checkBoxPIDValue.Size = new System.Drawing.Size(74, 17);
+            this.checkBoxPIDValue.TabIndex = 7;
+            this.checkBoxPIDValue.Text = "PID Value";
+            this.toolTip1.SetToolTip(this.checkBoxPIDValue, "Wyjście regulatora przed konwersją na wartości wypełnienia PWM");
+            this.checkBoxPIDValue.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPIDPwm
+            // 
+            this.checkBoxPIDPwm.AutoSize = true;
+            this.checkBoxPIDPwm.Location = new System.Drawing.Point(10, 65);
+            this.checkBoxPIDPwm.Name = "checkBoxPIDPwm";
+            this.checkBoxPIDPwm.Size = new System.Drawing.Size(70, 17);
+            this.checkBoxPIDPwm.TabIndex = 6;
+            this.checkBoxPIDPwm.Text = "PID Pwm";
+            this.toolTip1.SetToolTip(this.checkBoxPIDPwm, "Wypełnienie sygnału PWM dla obu silników");
+            this.checkBoxPIDPwm.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::LFCharts.Properties.Resources.male;
+            this.pictureBox1.InitialImage = global::LFCharts.Properties.Resources.male;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 431);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(60, 60);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 14;
+            this.pictureBox1.TabStop = false;
+            this.toolTip1.SetToolTip(this.pictureBox1, "Wersja: 1.0\r\nAutor: Andrzej Gauza Koło Robotyczne Ósmego Liceum");
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(977, 503);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonPlot);
             this.Controls.Add(this.tabControl1);
@@ -514,7 +548,7 @@
             this.Controls.Add(this.menuStripUp);
             this.MainMenuStrip = this.menuStripUp;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "LFCharts";
             this.menuStripUp.ResumeLayout(false);
             this.menuStripUp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKi)).EndInit();
@@ -544,6 +578,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPWM)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -584,10 +619,13 @@
         private System.Windows.Forms.NumericUpDown nudWeights13;
         private System.Windows.Forms.NumericUpDown nudWeights12;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox checkBoxPID1;
+        private System.Windows.Forms.CheckBox checkBoxPIDPwm;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown numericUpDownPWM;
+        private System.Windows.Forms.CheckBox checkBoxPIDValue;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
