@@ -12,10 +12,17 @@ namespace LFCharts
         private Data data;
         private const int SensorsNumber = 12;
         private float[] Average;
+        string[] Args;
 
         public Form1()
         {
             InitializeComponent();
+            Args = Environment.GetCommandLineArgs();
+            if(Args.Length >= 2)
+            {
+                var FileStream = System.IO.File.Open(Args[1],System.IO.FileMode.Open);
+                ParseFile(FileStream);
+            }
             cartesianChart1.DataTooltip = null;
             cartesianChart1.ScrollMode = ScrollMode.X;
             cartesianChart1.Zoom = ZoomingOptions.X;
@@ -28,13 +35,24 @@ namespace LFCharts
             cartesianChart1.AxisY.Add(new Axis
             {
                 Foreground = System.Windows.Media.Brushes.DodgerBlue,
-                Title = "PWM"
+                Title = "PWM",
+                MaxValue = 270,
+                MinValue = -10
             });
             cartesianChart1.AxisY.Add(new Axis
             {
                 Foreground = System.Windows.Media.Brushes.IndianRed,
                 Title = "Dane",
-                Position = AxisPosition.RightTop
+                Position = AxisPosition.LeftBottom
+            });
+            cartesianChart1.AxisX.Add(new Axis
+            {
+                Separator = new Separator()
+                {
+                    Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(70, 70, 70)),
+                    StrokeDashArray = new System.Windows.Media.DoubleCollection(),
+                },
+                Unit = 1
             });
         }
 
@@ -47,6 +65,22 @@ namespace LFCharts
                 methodInvokerDelegate();
         }
 
+        private void ParseFile(System.IO.Stream fileStream)
+        {
+            Cursor = Cursors.WaitCursor;
+            using (System.IO.BinaryReader Reader = new System.IO.BinaryReader(fileStream))
+            {
+                data = new Data(Reader);
+                Init();
+            }
+            if (!data.Ok)
+            {
+                MessageBox.Show("Nie można odczytać pliku!");
+            }
+            fileStream.Dispose();
+            Cursor = Cursors.Arrow;
+        }
+
         private void toolStripMenuItemOpen_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
@@ -57,19 +91,8 @@ namespace LFCharts
                 dialog.RestoreDirectory = true;
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    Cursor = Cursors.WaitCursor;
                     var fileStream = dialog.OpenFile();
-                    using (System.IO.BinaryReader Reader = new System.IO.BinaryReader(fileStream))
-                    {
-                        data = new Data(Reader);
-                        Init();
-                    }
-                    if (!data.Ok)
-                    {
-                        MessageBox.Show("Nie można odczytać pliku!");
-                    }
-                    fileStream.Dispose();
-                    Cursor = Cursors.Arrow;
+                    ParseFile(fileStream);
                 }
             }
         }
@@ -123,108 +146,119 @@ namespace LFCharts
             foreach (var series in cartesianChart1.Series)
                 cartesianChart1.Series.Remove(series);
             Cursor = Cursors.WaitCursor;
-            if (checkBoxPlotData.Checked)
+            try
             {
-                cartesianChart1.Series.Add(new LineSeries
+                if (checkBoxPlotData.Checked)
                 {
-                    Values = new ChartValues<float>(Average),
-                    Title = "Dane",
-                    Fill = System.Windows.Media.Brushes.Transparent,
-                    PointGeometry = null,
-                    LineSmoothness = 0,
-                    ScalesYAt = 1,
-                    PointForeground = System.Windows.Media.Brushes.Black
-                });
-            }
-            if (checkBoxPIDValue.Checked)
-            {
-                int[] Val = new int[data.Size / 2];
-                int errPre = 0;
-                for (int i = 0; i < data.Size / 2; i++)
-                {
-                    if (data.Values[i] == 0)
+                    cartesianChart1.Series.Add(new LineSeries
                     {
-                        if (errPre < 0)
-                        {
-                            errPre = Convert.ToInt32(nudWeights0.Value);
-                        }
-                        else
-                        if (errPre > 0)
-                        {
-                            errPre = Convert.ToInt32(nudWeights11.Value);
-                        }
-                    }
-                    int err = Convert.ToInt32(Average[i] * -1);
-                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre));
-                    Val[i] = Change;
+                        Values = new ChartValues<float>(Average),
+                        Title = "Dane",
+                        Fill = System.Windows.Media.Brushes.Transparent,
+                        PointGeometry = null,
+                        LineSmoothness = 0,
+                        ScalesYAt = 1,
+                        PointForeground = System.Windows.Media.Brushes.Black,
+                        Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 102, 255))
+                    });
                 }
-                cartesianChart1.Series.Add(new LineSeries
+                if (checkBoxPIDValue.Checked)
                 {
-                    Values = new ChartValues<int>(Val),
-                    Title = "Wart. zmiany",
-                    Fill = System.Windows.Media.Brushes.Transparent,
-                    PointGeometry = null,
-                    LineSmoothness = 0,
-                    PointForeground = System.Windows.Media.Brushes.Yellow
-                });
-            }
-            if (checkBoxPIDPwm.Checked)
-            {
-                int[] Left = new int[data.Size / 2];
-                int[] Right = new int[data.Size / 2];
-                int errPre = 0;
-                for (int i = 0; i < data.Size / 2; i++)
-                {
-                    if (data.Values[i] == 0)
+                    int[] Val = new int[data.Size / 2];
+                    int errPre = 0;
+                    for (int i = 0; i < data.Size / 2; i++)
                     {
-                        if (errPre < 0)
+                        if (data.Values[i] == 0)
                         {
-                            errPre = Convert.ToInt32(nudWeights0.Value);
+                            if (errPre < 0)
+                            {
+                                errPre = Convert.ToInt32(nudWeights0.Value);
+                            }
+                            else
+                            if (errPre > 0)
+                            {
+                                errPre = Convert.ToInt32(nudWeights11.Value);
+                            }
                         }
-                        else
-                        if (errPre > 0)
-                        {
-                            errPre = Convert.ToInt32(nudWeights11.Value);
-                        }
+                        int err = Convert.ToInt32(Average[i] * -1);
+                        int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre));
+                        Val[i] = Change;
                     }
-                    int err = Convert.ToInt32(Average[i] * -1);
-                    int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre) + numericUpDownKi.Value * (err - errPre));
-                    if (data.Values[i] != 0)
-                        errPre = err;
-                    int tempPwm;
-                    tempPwm = Convert.ToInt32(numericUpDownPWM.Value + Change);
-                    if (tempPwm > 255)
-                        tempPwm = 255;
-                    else
-                        if (tempPwm < 0)
-                        tempPwm = 0;
-                    Left[i] = tempPwm;
-                    tempPwm = Convert.ToInt32(numericUpDownPWM.Value - Change);
-                    if (tempPwm > 255)
-                        tempPwm = 255;
-                    else
-                        if (tempPwm < 0)
-                        tempPwm = 0;
-                    Right[i] = tempPwm;
+                    cartesianChart1.Series.Add(new LineSeries
+                    {
+                        Values = new ChartValues<int>(Val),
+                        Title = "Wart. zmiany",
+                        Fill = System.Windows.Media.Brushes.Transparent,
+                        PointGeometry = null,
+                        LineSmoothness = 0,
+                        PointForeground = System.Windows.Media.Brushes.Yellow,
+                        Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 0))
+                    });
                 }
-                cartesianChart1.Series.Add(new LineSeries
+                if (checkBoxPIDPwm.Checked)
                 {
-                    Values = new ChartValues<int>(Left),
-                    Title = "Lewy PWM",
-                    Fill = System.Windows.Media.Brushes.Transparent,
-                    PointGeometry = null,
-                    LineSmoothness = 0,
-                    PointForeground = System.Windows.Media.Brushes.Red
-                });
-                cartesianChart1.Series.Add(new LineSeries
-                {
-                    Values = new ChartValues<int>(Right),
-                    Title = "Prawy PWM",
-                    Fill = System.Windows.Media.Brushes.Transparent,
-                    PointGeometry = null,
-                    LineSmoothness = 0,
-                    PointForeground = System.Windows.Media.Brushes.Blue
-                });
+                    int[] Left = new int[data.Size / 2];
+                    int[] Right = new int[data.Size / 2];
+                    int errPre = 0;
+                    for (int i = 0; i < data.Size / 2; i++)
+                    {
+                        if (data.Values[i] == 0)
+                        {
+                            if (errPre < 0)
+                            {
+                                errPre = Convert.ToInt32(nudWeights0.Value);
+                            }
+                            else
+                            if (errPre > 0)
+                            {
+                                errPre = Convert.ToInt32(nudWeights11.Value);
+                            }
+                        }
+                        int err = Convert.ToInt32(Average[i] * -1);
+                        int Change = Convert.ToInt32(numericUpDownKp.Value * err + numericUpDownKd.Value * (err - errPre) + numericUpDownKi.Value * (err - errPre));
+                        if (data.Values[i] != 0)
+                            errPre = err;
+                        int tempPwm;
+                        tempPwm = Convert.ToInt32(numericUpDownPWM.Value + Change);
+                        if (tempPwm > 255)
+                            tempPwm = 255;
+                        else
+                            if (tempPwm < 0)
+                            tempPwm = 0;
+                        Left[i] = tempPwm;
+                        tempPwm = Convert.ToInt32(numericUpDownPWM.Value - Change);
+                        if (tempPwm > 255)
+                            tempPwm = 255;
+                        else
+                            if (tempPwm < 0)
+                            tempPwm = 0;
+                        Right[i] = tempPwm;
+                    }
+                    cartesianChart1.Series.Add(new LineSeries
+                    {
+                        Values = new ChartValues<int>(Left),
+                        Title = "Lewy PWM",
+                        Fill = System.Windows.Media.Brushes.Transparent,
+                        PointGeometry = null,
+                        LineSmoothness = 0,
+                        PointForeground = System.Windows.Media.Brushes.Red,
+                        Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 0))
+                    });
+                    cartesianChart1.Series.Add(new LineSeries
+                    {
+                        Values = new ChartValues<int>(Right),
+                        Title = "Prawy PWM",
+                        Fill = System.Windows.Media.Brushes.Transparent,
+                        PointGeometry = null,
+                        LineSmoothness = 0,
+                        PointForeground = System.Windows.Media.Brushes.Blue,
+                        Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(64, 255, 0))
+                    });
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Błąd rysowania");
             }
             Cursor = Cursors.Arrow;
         }
@@ -243,6 +277,14 @@ namespace LFCharts
             SetNumericUpDownValue(numericUpDownKp, Convert.ToDecimal(data.Kp));
             SetNumericUpDownValue(numericUpDownKd, Convert.ToDecimal(data.Kd));
             SetNumericUpDownValue(numericUpDownKi, Convert.ToDecimal(data.Ki));
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (this.Size.Height <= 430)
+                this.SetBounds(this.Location.X, this.Location.Y, this.Size.Width, 430);
+            cartesianChart1.SetBounds(cartesianChart1.Location.X, cartesianChart1.Location.Y, this.Width - 150, this.Height - 100);
+            pictureBox1.SetBounds(pictureBox1.Location.X, this.Size.Height - 110, pictureBox1.Size.Width, pictureBox1.Size.Height);
         }
     }
 

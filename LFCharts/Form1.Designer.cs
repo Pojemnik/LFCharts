@@ -207,6 +207,8 @@
             // checkBoxPlotData
             // 
             this.checkBoxPlotData.AutoSize = true;
+            this.checkBoxPlotData.Checked = true;
+            this.checkBoxPlotData.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxPlotData.Location = new System.Drawing.Point(10, 19);
             this.checkBoxPlotData.Name = "checkBoxPlotData";
             this.checkBoxPlotData.Size = new System.Drawing.Size(52, 17);
@@ -504,6 +506,8 @@
             // checkBoxPIDValue
             // 
             this.checkBoxPIDValue.AutoSize = true;
+            this.checkBoxPIDValue.Checked = true;
+            this.checkBoxPIDValue.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxPIDValue.Location = new System.Drawing.Point(10, 42);
             this.checkBoxPIDValue.Name = "checkBoxPIDValue";
             this.checkBoxPIDValue.Size = new System.Drawing.Size(74, 17);
@@ -533,7 +537,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 14;
             this.pictureBox1.TabStop = false;
-            this.toolTip1.SetToolTip(this.pictureBox1, "Wersja: 1.0\r\nAutor: Andrzej Gauza Koło Robotyczne Ósmego Liceum");
+            this.toolTip1.SetToolTip(this.pictureBox1, "Wersja: 1.1\r\nAutor: Andrzej Gauza Koło Robotyczne Ósmego Liceum");
             // 
             // Form1
             // 
@@ -549,6 +553,7 @@
             this.MainMenuStrip = this.menuStripUp;
             this.Name = "Form1";
             this.Text = "LFCharts";
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.menuStripUp.ResumeLayout(false);
             this.menuStripUp.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKi)).EndInit();
